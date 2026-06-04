@@ -169,7 +169,11 @@ def train_model(
         valid_sets=[train_dataset, val_dataset],
         callbacks=[lgb.early_stopping(50), lgb.log_evaluation(50)],
     )
-    model_path = output_dir / f"lgb_{target_col}.txt"
+    model_filenames = {
+        "rent_count": "lgb_rent_model.txt",
+        "return_count": "lgb_return_model.txt",
+    }
+    model_path = output_dir / model_filenames[target_col]
     model.save_model(str(model_path))
     return model
 

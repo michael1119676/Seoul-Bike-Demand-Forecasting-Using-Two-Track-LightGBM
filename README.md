@@ -80,8 +80,8 @@ python src/train_evaluate.py \
 ## Main Outputs
 
 ```text
-lgb_rent_count.txt
-lgb_return_count.txt
+lgb_rent_model.txt
+lgb_return_model.txt
 model_comparison.csv
 predictions_202604.parquet
 feature_importance_rent_count.csv
