@@ -1,0 +1,34 @@
+# Data and generated artifacts
+*.parquet
+*.csv.gz
+*.zip
+*.joblib
+*.pkl
+*.memmap
+*.bin
+lgb_*.txt
+
+# Keep source text files in docs if needed
+!docs/*.txt
+
+data/
+raw/
+processed/
+models/
+checkpoints/
+predictions/
+outputs/
+results/*
+!results/.gitkeep
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS
+.DS_Store
