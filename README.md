@@ -83,13 +83,19 @@ python src/train_evaluate.py \
 lgb_rent_model.txt
 lgb_return_model.txt
 model_comparison.csv
+net_flow_error_summary.json
 predictions_202604.parquet
 feature_importance_rent_count.csv
 feature_importance_return_count.csv
 top_shortage_stations.csv
 top_surplus_stations.csv
+top_volatile_stations.csv
 run_manifest.json
 ```
+
+`model_comparison.csv` includes rental demand, return demand, and derived
+Net Flow evaluation rows. `net_flow_error_summary.json` stores the conservative
+error bound and cancellation ratio used for the Net Flow reliability check.
 
 ## Notes
 

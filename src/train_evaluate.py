@@ -223,14 +223,6 @@ def main(feature_dir: Path, output_dir: Path) -> None:
     pred_rent = np.clip(rent_model.predict(x_test), 0, None)
     pred_return = np.clip(return_model.predict(x_test), 0, None)
 
-    metrics = [
-        {"target": "rent_count", **evaluate_predictions(y_rent, pred_rent)},
-        {"target": "return_count", **evaluate_predictions(y_return, pred_return)},
-    ]
-    metrics_df = pd.DataFrame(metrics)
-    metrics_df.to_csv(output_dir / "model_comparison.csv", index=False)
-    print(metrics_df)
-
     prediction_df = x_test[["station_id", "district", "hour"]].copy()
     prediction_df["actual_rent"] = y_rent.to_numpy()
     prediction_df["actual_return"] = y_return.to_numpy()
@@ -238,6 +230,42 @@ def main(feature_dir: Path, output_dir: Path) -> None:
     prediction_df["pred_return"] = pred_return
     prediction_df["pred_net_flow"] = prediction_df["pred_return"] - prediction_df["pred_rent"]
     prediction_df["actual_net_flow"] = prediction_df["actual_return"] - prediction_df["actual_rent"]
+    prediction_df["abs_pred_net_flow"] = prediction_df["pred_net_flow"].abs()
+
+    rent_metrics = evaluate_predictions(y_rent, pred_rent)
+    return_metrics = evaluate_predictions(y_return, pred_return)
+    net_flow_metrics = evaluate_predictions(
+        prediction_df["actual_net_flow"],
+        prediction_df["pred_net_flow"],
+    )
+
+    metrics = [
+        {"target": "rent_count", **rent_metrics},
+        {"target": "return_count", **return_metrics},
+        {"target": "net_flow", **net_flow_metrics},
+    ]
+    metrics_df = pd.DataFrame(metrics)
+    metrics_df.to_csv(output_dir / "model_comparison.csv", index=False)
+    print(metrics_df)
+
+    conservative_bound = rent_metrics["MAE"] + return_metrics["MAE"]
+    cancellation_ratio = (
+        net_flow_metrics["MAE"] / conservative_bound
+        if conservative_bound > 0
+        else np.nan
+    )
+    error_summary = {
+        "rent_mae": rent_metrics["MAE"],
+        "return_mae": return_metrics["MAE"],
+        "net_flow_mae": net_flow_metrics["MAE"],
+        "conservative_bound": conservative_bound,
+        "cancellation_ratio": float(cancellation_ratio),
+    }
+    (output_dir / "net_flow_error_summary.json").write_text(
+        json.dumps(error_summary, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
     prediction_df.to_parquet(output_dir / "predictions_202604.parquet", index=False)
 
     station_flow = (
@@ -248,6 +276,16 @@ def main(feature_dir: Path, output_dir: Path) -> None:
     station_flow.head(20).to_csv(output_dir / "top_shortage_stations.csv", index=False)
     station_flow.tail(20).sort_values("pred_net_flow", ascending=False).to_csv(
         output_dir / "top_surplus_stations.csv", index=False
+    )
+
+    station_volatility = (
+        prediction_df.groupby("station_id", as_index=False)["abs_pred_net_flow"]
+        .sum()
+        .sort_values("abs_pred_net_flow", ascending=False)
+    )
+    station_volatility.head(20).to_csv(
+        output_dir / "top_volatile_stations.csv",
+        index=False,
     )
 
     save_feature_importance(rent_model, "rent_count", output_dir)
