@@ -1,0 +1,46 @@
+seed: 42
+
+data:
+  feature_dir: data/processed/two_track
+  file_pattern: model_features_*.parquet
+  train_start: 202212
+  train_end: 202512
+  validation_month: 202603
+  test_month: 202604
+  train_sample_frac: 0.30
+  validation_sample_frac: 1.0
+  test_sample_frac: 1.0
+  forecast_protocol: rolling_1h
+
+model:
+  num_boost_round: 1000
+  early_stopping_rounds: 50
+  log_period: 50
+  params:
+    objective: regression_l1
+    metric: mae
+    boosting_type: gbdt
+    learning_rate: 0.05
+    num_leaves: 63
+    max_depth: 8
+    min_data_in_leaf: 40
+    feature_fraction: 0.8
+    bagging_fraction: 0.8
+    bagging_freq: 1
+    num_threads: -1
+    verbosity: -1
+
+ablation:
+  enabled: true
+  # Fraction of the already-loaded split. With the default 30% main sample,
+  # 0.10 means a 3% effective sample of the full training period.
+  train_fraction_of_loaded: 0.10
+  validation_fraction: 0.20
+  test_fraction: 0.20
+  num_boost_round: 300
+  early_stopping_rounds: 30
+
+output:
+  result_dir: results/actual_202604
+  artifact_dir: artifacts/actual_202604
+  save_test_predictions: false
