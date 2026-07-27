@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seoul-bike-forecasting"
+version = "0.2.0"
+description = "Reproducible two-track Seoul Bike demand forecasting"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "pandas==2.3.2",
+  "numpy==2.3.3",
+  "pyarrow==21.0.0",
+  "lightgbm==4.6.0",
+  "scikit-learn==1.8.0",
+  "matplotlib==3.10.6",
+  "seaborn==0.13.2",
+  "PyYAML==6.0.3",
+]
+
+[project.scripts]
+seoul-bike = "seoul_bike_forecasting.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+pythonpath = ["src"]

@@ -7,6 +7,7 @@
 *.memmap
 *.bin
 lgb_*.txt
+*.log
 
 # Keep source text files in docs if needed
 !docs/*.txt
@@ -18,8 +19,16 @@ models/
 checkpoints/
 predictions/
 outputs/
-results/*
+artifacts/
+
+# Commit compact, reproducible research outputs only.
+results/**
 !results/.gitkeep
+!results/**/
+!results/**/*.csv
+!results/**/*.json
+!results/**/*.md
+!results/**/*.png
 
 # Notebooks
 .ipynb_checkpoints/
@@ -27,8 +36,13 @@ results/*
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .venv/
 venv/
 
 # OS
 .DS_Store
+
+# Local plotting/test caches
+.matplotlib/
+.pytest_cache/
