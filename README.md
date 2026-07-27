@@ -1,5 +1,7 @@
 # Seoul Bike Demand Forecasting
 
+[![CI](https://github.com/michael1119676/Seoul-Bike-Demand-Forecasting-Using-Two-Track-LightGBM/actions/workflows/ci.yml/badge.svg)](https://github.com/michael1119676/Seoul-Bike-Demand-Forecasting-Using-Two-Track-LightGBM/actions/workflows/ci.yml)
+
 Reproducible station-hour demand forecasting with separate LightGBM models for
 bike rentals and returns. Net flow is derived as `predicted returns - predicted
 rentals` for rebalancing analysis.
